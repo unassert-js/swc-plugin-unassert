@@ -11,7 +11,7 @@ lto = true
 
 [dependencies]
 serde = "1"
-swc_core = { version = "0.89.*", features = ["ecma_plugin_transform"] }
+swc_core = { version = "0.90.*", features = ["ecma_plugin_transform"] }
 
 [dev-dependencies]
 swc_ecma_transforms_testing = "0.140.*"
