@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "description": "",
     "author": "",
-    "license": "ISC",
+    "license": "MIT",
     "keywords": ["swc-plugin"],
     "main": "target/wasm32-wasi/release/swc_plugin_unassert.wasm",
     "scripts": {
