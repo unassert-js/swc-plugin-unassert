@@ -1,14 +1,22 @@
 {
-    "name": "swc-plugin-unassert",
-    "version": "0.1.0",
-    "description": "",
-    "author": "",
-    "license": "MIT",
-    "keywords": ["swc-plugin"],
-    "main": "target/wasm32-wasi/release/swc_plugin_unassert.wasm",
-    "scripts": {
-        "prepublishOnly": "cargo build-wasi --release"
-    },
-    "files": [],
-    "preferUnplugged": true
+  "name": "swc-plugin-unassert",
+  "version": "0.1.0",
+  "description": "SWC plugin for unassert-js",
+  "author": {
+    "name": "Takuto WADA",
+    "email": "takuto.wada@gmail.com",
+    "url": "https://github.com/twada"
+  },
+  "license": "MIT",
+  "keywords": [
+    "swc-plugin",
+    "assert",
+    "unassert"
+  ],
+  "main": "target/wasm32-wasi/release/swc_plugin_unassert.wasm",
+  "scripts": {
+    "prepublishOnly": "cargo build-wasi --release"
+  },
+  "files": [],
+  "preferUnplugged": true
 }
