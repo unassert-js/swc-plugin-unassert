@@ -1,15 +1,76 @@
-use swc_core::ecma::{
-    ast::Program,
-    visit::{as_folder, FoldWith, VisitMut},
+use std::collections::HashSet;
+use swc_core::common::util::take::Take;
+use swc_core::ecma::atoms::JsWord;
+use swc_core::ecma::ast::{
+    Id,
+    Program,
+    ImportDecl,
+    ImportSpecifier,
+    ImportDefaultSpecifier,
+    ImportStarAsSpecifier,
+    ImportNamedSpecifier,
+    ModuleItem,
+    ModuleDecl,
+};
+use swc_core::ecma::visit::{
+    as_folder,
+    FoldWith,
+    VisitMut, VisitMutWith
 };
 use swc_core::plugin::{plugin_transform, proxies::TransformPluginProgramMetadata};
 
-pub struct TransformVisitor;
+pub struct TransformVisitor {
+    target_variables: HashSet<Id>,
+    target_modules: HashSet<JsWord>,
+}
+
+impl Default for TransformVisitor {
+    fn default() -> Self {
+        Self {
+            target_variables: HashSet::new(),
+            target_modules: [
+                "node:assert",
+                "node:assert/strict",
+                "assert",
+                "assert/strict",
+            ].iter().map(|s| JsWord::from(*s)).collect(),
+        }
+    }
+}
 
 impl VisitMut for TransformVisitor {
-    // Implement necessary visit_mut_* methods for actual custom transform.
-    // A comprehensive list of possible visitor methods can be found here:
-    // https://rustdoc.swc.rs/swc_ecma_visit/trait.VisitMut.html
+    fn visit_mut_import_decl(&mut self, n: &mut ImportDecl) {
+        if self.target_modules.contains(&n.src.value) {
+            for s in &mut n.specifiers {
+                match s {
+                    ImportSpecifier::Default(ImportDefaultSpecifier { local, .. }) => {
+                        self.target_variables.insert(local.to_id());
+                    },
+                    ImportSpecifier::Namespace(ImportStarAsSpecifier { local, .. }) => {
+                        self.target_variables.insert(local.to_id());
+                    },
+                    ImportSpecifier::Named(ImportNamedSpecifier { local, .. }) => {
+                        self.target_variables.insert(local.to_id());
+                    },
+                }
+            }
+            n.take();
+        } else {
+            n.visit_mut_children_with(self);
+        }
+    }
+
+    fn visit_mut_module_items(&mut self, n: &mut Vec<ModuleItem>) {
+        n.visit_mut_children_with(self);
+        n.retain(|s| {
+            match s {
+                ModuleItem::ModuleDecl(ModuleDecl::Import(decl)) => {
+                    *decl != ImportDecl::dummy()
+                },
+                _ => true,
+            }
+        });
+    }
 }
 
 /// An example plugin function with macro support.
@@ -29,7 +90,7 @@ impl VisitMut for TransformVisitor {
 /// Refer swc_plugin_macro to see how does it work internally.
 #[plugin_transform]
 pub fn process_transform(program: Program, _metadata: TransformPluginProgramMetadata) -> Program {
-    program.fold_with(&mut as_folder(TransformVisitor))
+    program.fold_with(&mut as_folder(TransformVisitor::default()))
 }
 
 #[cfg(test)]
@@ -47,7 +108,7 @@ mod tests {
         test_fixture(
             Syntax::Es(EsConfig::default()),
             &|_t| {
-                as_folder(TransformVisitor{})
+                as_folder(TransformVisitor::default())
             },
             &input,
             &output,
