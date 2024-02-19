@@ -70,9 +70,7 @@ impl VisitMut for TransformVisitor {
         n.visit_mut_children_with(self);
         n.retain(|s| {
             match s {
-                ModuleItem::ModuleDecl(ModuleDecl::Import(decl)) => {
-                    *decl != ImportDecl::dummy()
-                },
+                ModuleItem::ModuleDecl(ModuleDecl::Import(decl)) => *decl != ImportDecl::dummy(),
                 _ => true,
             }
         });
@@ -107,18 +105,12 @@ impl VisitMut for TransformVisitor {
 
     fn visit_mut_stmt(&mut self, n: &mut Stmt) {
         n.visit_mut_children_with(self);
-        match n {
-            Stmt::Expr(ExprStmt{ expr, ..}) => {
-                match expr.as_ref() {
-                    Expr::Call(call_expr) => {
-                        if *call_expr == CallExpr::dummy() {
-                            n.take();
-                        }
-                    },
-                    _ => {}
+        if let Stmt::Expr(ExprStmt{ expr, ..}) = n {
+            if let Expr::Call(call_expr) = expr.as_ref() {
+                if *call_expr == CallExpr::dummy() {
+                    n.take();
                 }
-            },
-            _ => {}
+            }
         }
     }
 }
