@@ -81,7 +81,7 @@ impl VisitMut for TransformVisitor {
             n.visit_mut_children_with(self);
             return;
         }
-        let matched = match n.callee {
+        let to_be_removed = match n.callee {
             Callee::Expr(ref expr) => {
                 match expr.as_ref() {
                     Expr::Member(MemberExpr{ obj, .. }) => {
@@ -96,7 +96,7 @@ impl VisitMut for TransformVisitor {
             },
             _ => false
         };
-        if matched {
+        if to_be_removed {
             n.take();
         } else {
             n.visit_mut_children_with(self);
