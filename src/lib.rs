@@ -16,6 +16,7 @@ use swc_core::ecma::ast::{
     Expr,
     Stmt,
     ExprStmt,
+    MemberExpr,
 };
 use swc_core::ecma::visit::{
     as_folder,
@@ -85,6 +86,12 @@ impl VisitMut for TransformVisitor {
         let matched = match n.callee {
             Callee::Expr(ref expr) => {
                 match expr.as_ref() {
+                    Expr::Member(MemberExpr{ obj, .. }) => {
+                        match obj.as_ref() {
+                            Expr::Ident(ref obj_ident) => self.target_variables.contains(&obj_ident.to_id()),
+                            _ => false
+                        }
+                    },
                     Expr::Ident(ref ident) => self.target_variables.contains(&ident.to_id()),
                     _ => false
                 }
