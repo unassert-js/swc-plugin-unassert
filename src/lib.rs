@@ -11,6 +11,11 @@ use swc_core::ecma::ast::{
     ImportNamedSpecifier,
     ModuleItem,
     ModuleDecl,
+    CallExpr,
+    Callee,
+    Expr,
+    Stmt,
+    ExprStmt,
 };
 use swc_core::ecma::visit::{
     as_folder,
@@ -70,6 +75,44 @@ impl VisitMut for TransformVisitor {
                 _ => true,
             }
         });
+    }
+
+    fn visit_mut_call_expr(&mut self, n: &mut CallExpr) {
+        if self.target_variables.is_empty() {
+            n.visit_mut_children_with(self);
+            return;
+        }
+        let matched = match n.callee {
+            Callee::Expr(ref expr) => {
+                match expr.as_ref() {
+                    Expr::Ident(ref ident) => self.target_variables.contains(&ident.to_id()),
+                    _ => false
+                }
+            },
+            _ => false
+        };
+        if matched {
+            n.take();
+        } else {
+            n.visit_mut_children_with(self);
+        }
+    }
+
+    fn visit_mut_stmt(&mut self, n: &mut Stmt) {
+        n.visit_mut_children_with(self);
+        match n {
+            Stmt::Expr(ExprStmt{ expr, ..}) => {
+                match expr.as_ref() {
+                    Expr::Call(call_expr) => {
+                        if *call_expr == CallExpr::dummy() {
+                            n.take();
+                        }
+                    },
+                    _ => {}
+                }
+            },
+            _ => {}
+        }
     }
 }
 
