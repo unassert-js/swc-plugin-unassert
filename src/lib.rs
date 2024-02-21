@@ -138,11 +138,11 @@ mod tests {
     use swc_ecma_transforms_testing::test_fixture;
     use swc_core::ecma::transforms::testing::FixtureTestConfig;
     use swc_core::ecma::visit::as_folder;
-    use swc_ecma_parser::{EsConfig, Syntax};
+    use swc_ecma_parser::{EsConfig, Syntax, TsConfig};
     use super::TransformVisitor;
 
     #[testing::fixture("tests/fixtures/*/input.mjs")]
-    fn test_with_fixtures(input: PathBuf) {
+    fn test_with_js_fixtures(input: PathBuf) {
         let output = input.with_file_name("expected.mjs");
         test_fixture(
             Syntax::Es(EsConfig::default()),
@@ -157,4 +157,22 @@ mod tests {
             },
         );
     }
+
+    #[testing::fixture("tests/fixtures/*/input.mts")]
+    fn test_with_ts_fixtures(input: PathBuf) {
+        let output = input.with_file_name("expected.mts");
+        test_fixture(
+            Syntax::Typescript(TsConfig::default()),
+            &|_t| {
+                as_folder(TransformVisitor::default())
+            },
+            &input,
+            &output,
+            FixtureTestConfig {
+                allow_error: true,
+                ..Default::default()
+            },
+        );
+    }
+
 }
