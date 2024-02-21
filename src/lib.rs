@@ -30,6 +30,26 @@ pub struct TransformVisitor {
     target_modules: HashSet<JsWord>,
 }
 
+impl TransformVisitor {
+    fn is_removal_target(&mut self, call_expr: &mut CallExpr) -> bool {
+        match call_expr.callee {
+            Callee::Expr(ref expr) => {
+                match expr.as_ref() {
+                    Expr::Member(MemberExpr{ obj, .. }) => {
+                        match obj.as_ref() {
+                            Expr::Ident(ref obj_ident) => self.target_variables.contains(&obj_ident.to_id()),
+                            _ => false
+                        }
+                    },
+                    Expr::Ident(ref ident) => self.target_variables.contains(&ident.to_id()),
+                    _ => false
+                }
+            },
+            _ => false
+        }
+    }
+}
+
 impl Default for TransformVisitor {
     fn default() -> Self {
         Self {
@@ -76,30 +96,22 @@ impl VisitMut for TransformVisitor {
         });
     }
 
-    fn visit_mut_call_expr(&mut self, n: &mut CallExpr) {
+    fn visit_mut_expr_stmt(&mut self, n: &mut ExprStmt) {
         if self.target_variables.is_empty() {
             n.visit_mut_children_with(self);
             return;
         }
-        let to_be_removed = match n.callee {
-            Callee::Expr(ref expr) => {
-                match expr.as_ref() {
-                    Expr::Member(MemberExpr{ obj, .. }) => {
-                        match obj.as_ref() {
-                            Expr::Ident(ref obj_ident) => self.target_variables.contains(&obj_ident.to_id()),
-                            _ => false
-                        }
-                    },
-                    Expr::Ident(ref ident) => self.target_variables.contains(&ident.to_id()),
-                    _ => false
+        match n.expr.as_mut() {
+            Expr::Call(call_expr) => {
+                if self.is_removal_target(call_expr) {
+                    call_expr.take();
+                } else {
+                    n.visit_mut_children_with(self);
                 }
             },
-            _ => false
-        };
-        if to_be_removed {
-            n.take();
-        } else {
-            n.visit_mut_children_with(self);
+            _ => {
+                n.visit_mut_children_with(self);
+            }
         }
     }
 
