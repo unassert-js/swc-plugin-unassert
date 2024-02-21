@@ -91,6 +91,7 @@ impl VisitMut for TransformVisitor {
         n.retain(|s| {
             match s {
                 ModuleItem::ModuleDecl(ModuleDecl::Import(decl)) => *decl != ImportDecl::dummy(),
+                ModuleItem::Stmt(Stmt::Empty(..)) => false,
                 _ => true,
             }
         });
