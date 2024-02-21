@@ -80,7 +80,7 @@ impl VisitMut for TransformVisitor {
                     },
                 }
             }
-            n.take();
+            n.take(); // becomes ImportDecl::dummy()
         } else {
             n.visit_mut_children_with(self);
         }
