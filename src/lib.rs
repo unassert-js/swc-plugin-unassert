@@ -31,7 +31,7 @@ pub struct TransformVisitor {
 }
 
 impl TransformVisitor {
-    fn is_removal_target(&mut self, call_expr: &mut CallExpr) -> bool {
+    fn is_removal_target(&mut self, call_expr: &CallExpr) -> bool {
         match call_expr.callee {
             Callee::Expr(ref expr) => {
                 match expr.as_ref() {
@@ -97,30 +97,14 @@ impl VisitMut for TransformVisitor {
         });
     }
 
-    fn visit_mut_expr_stmt(&mut self, n: &mut ExprStmt) {
+    fn visit_mut_stmt(&mut self, n: &mut Stmt) {
         if self.target_variables.is_empty() {
             n.visit_mut_children_with(self);
             return;
         }
-        match n.expr.as_mut() {
-            Expr::Call(call_expr) => {
-                if self.is_removal_target(call_expr) {
-                    call_expr.take();
-                } else {
-                    n.visit_mut_children_with(self);
-                }
-            },
-            _ => {
-                n.visit_mut_children_with(self);
-            }
-        }
-    }
-
-    fn visit_mut_stmt(&mut self, n: &mut Stmt) {
-        n.visit_mut_children_with(self);
         if let Stmt::Expr(ExprStmt{ expr, ..}) = n {
             if let Expr::Call(call_expr) = expr.as_ref() {
-                if *call_expr == CallExpr::dummy() {
+                if self.is_removal_target(call_expr) {
                     n.take();
                 }
             }
