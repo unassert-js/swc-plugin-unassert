@@ -1,0 +1,13 @@
+{
+  "jsc": {
+    "parser": {
+      "syntax": "typescript"
+    },
+    "experimental": {
+      "plugins": [
+        ["./swc_plugin_unassert.wasm", {}]
+      ]
+    }
+  },
+  "sourceMaps": false
+}

@@ -20,7 +20,13 @@
     "Cargo.toml",
     "package.json"
   ],
+  "devDependencies": {
+    "@swc/cli": "^0.3.9",
+    "@swc/core": "^1.4.2"
+  },
   "scripts": {
+    "example": "npm run example:cli",
+    "example:cli": "RUST_BACKTRACE=1 swc ./tests/fixtures/MemberExpression/input.mts",
     "build": "npm run build:release && npm run build:cp",
     "build:cp": "cp ./target/wasm32-wasi/release/swc_plugin_unassert.wasm ./swc_plugin_unassert.wasm",
     "build:release": "cargo build-wasi --release",
