@@ -13,10 +13,18 @@
     "assert",
     "unassert"
   ],
-  "main": "target/wasm32-wasi/release/swc_plugin_unassert.wasm",
+  "main": "./swc_plugin_unassert.wasm",
+  "files": [
+    "swc_plugin_unassert.wasm",
+    "src",
+    "Cargo.toml",
+    "package.json"
+  ],
   "scripts": {
-    "prepublishOnly": "cargo build-wasi --release"
+    "build": "npm run build:release && npm run build:cp",
+    "build:cp": "cp ./target/wasm32-wasi/release/swc_plugin_unassert.wasm ./swc_plugin_unassert.wasm",
+    "build:release": "cargo build-wasi --release",
+    "test": "cargo test"
   },
-  "files": [],
   "preferUnplugged": true
 }

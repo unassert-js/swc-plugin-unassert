@@ -1,3 +1,6 @@
+swc_plugin_unassert.wasm
+.swc/
+
 /target
 ^target/
 target
