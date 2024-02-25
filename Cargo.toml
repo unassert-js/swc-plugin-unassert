@@ -2,6 +2,12 @@
 name = "swc-plugin-unassert"
 version = "0.1.0"
 edition = "2021"
+authors = ["Takuto WADA <takuto.wada@gmail.com>"]
+include = ["Cargo.toml", "src/**/*.rs"]
+license = "MIT"
+description = """
+SWC plugin for unassert
+"""
 
 [lib]
 crate-type = ["cdylib"]
