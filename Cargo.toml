@@ -14,6 +14,14 @@ crate-type = ["cdylib"]
 
 [profile.release]
 lto = true
+# This removes more dead code
+codegen-units = 1
+# Optimize for size
+opt-level = "s"
+# Optimize for performance, this is default so you don't need to specify it
+# opt-level = "z"
+# Strip debug symbols
+strip = "symbols"
 
 [dependencies]
 serde = "1"
