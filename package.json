@@ -7,6 +7,12 @@
     "email": "takuto.wada@gmail.com",
     "url": "https://github.com/twada"
   },
+  "homepage": "https://github.com/unassert-js/swc-plugin-unassert",
+  "bugs": "https://github.com/unassert-js/swc-plugin-unassert/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/unassert-js/swc-plugin-unassert.git"
+  },
   "license": "MIT",
   "keywords": [
     "swc-plugin",
