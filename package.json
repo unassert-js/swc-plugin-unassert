@@ -1,6 +1,6 @@
 {
   "name": "swc-plugin-unassert",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "SWC plugin for unassert: Encourages programming with assertions by providing tools to compile them away",
   "author": {
     "name": "Takuto WADA",
