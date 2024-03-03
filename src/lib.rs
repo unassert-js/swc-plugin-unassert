@@ -105,7 +105,7 @@ impl VisitMut for TransformVisitor {
         if let Stmt::Expr(ExprStmt{ expr, ..}) = n {
             if let Expr::Call(call_expr) = expr.as_ref() {
                 if self.is_removal_target(call_expr) {
-                    n.take();
+                    n.take(); // becomes Stmt::Empty
                 }
             }
         }
