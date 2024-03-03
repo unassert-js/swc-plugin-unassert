@@ -1,12 +1,12 @@
 [package]
 name = "swc-plugin-unassert"
-version = "0.1.0"
+version = "0.0.0"
 edition = "2021"
 authors = ["Takuto WADA <takuto.wada@gmail.com>"]
 include = ["Cargo.toml", "src/**/*.rs"]
 license = "MIT"
 description = """
-SWC plugin for unassert
+SWC plugin for unassert: Encourages programming with assertions by providing tools to compile them away
 """
 
 [lib]
