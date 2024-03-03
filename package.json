@@ -1,7 +1,7 @@
 {
   "name": "swc-plugin-unassert",
-  "version": "0.1.0",
-  "description": "SWC plugin for unassert-js",
+  "version": "0.0.0",
+  "description": "SWC plugin for unassert: Encourages programming with assertions by providing tools to compile them away",
   "author": {
     "name": "Takuto WADA",
     "email": "takuto.wada@gmail.com",
@@ -16,6 +16,7 @@
   "license": "MIT",
   "keywords": [
     "swc-plugin",
+    "DbC",
     "assert",
     "unassert"
   ],
@@ -24,6 +25,8 @@
     "swc_plugin_unassert.wasm",
     "src",
     "Cargo.toml",
+    "README.md",
+    "CHANGELOG.md",
     "package.json"
   ],
   "devDependencies": {
