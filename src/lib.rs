@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use swc_core::common::util::take::Take;
-use swc_core::ecma::atoms::JsWord;
+use swc_core::ecma::atoms::Atom;
 use swc_core::ecma::ast::{
     Id,
     Program,
@@ -19,15 +19,14 @@ use swc_core::ecma::ast::{
     MemberExpr,
 };
 use swc_core::ecma::visit::{
-    as_folder,
-    FoldWith,
+    visit_mut_pass,
     VisitMut, VisitMutWith
 };
 use swc_core::plugin::{plugin_transform, proxies::TransformPluginProgramMetadata};
 
 pub struct TransformVisitor {
     target_variables: HashSet<Id>,
-    target_modules: HashSet<JsWord>,
+    target_modules: HashSet<Atom>,
 }
 
 impl TransformVisitor {
@@ -59,7 +58,7 @@ impl Default for TransformVisitor {
                 "node:assert/strict",
                 "assert",
                 "assert/strict",
-            ].iter().map(|s| JsWord::from(*s)).collect(),
+            ].iter().map(|s| Atom::from(*s)).collect(),
         }
     }
 }
@@ -129,7 +128,7 @@ impl VisitMut for TransformVisitor {
 /// Refer swc_plugin_macro to see how does it work internally.
 #[plugin_transform]
 pub fn process_transform(program: Program, _metadata: TransformPluginProgramMetadata) -> Program {
-    program.fold_with(&mut as_folder(TransformVisitor::default()))
+    program.apply(&mut visit_mut_pass(TransformVisitor::default()))
 }
 
 #[cfg(test)]
@@ -137,17 +136,17 @@ mod tests {
     use std::path::PathBuf;
     use swc_ecma_transforms_testing::test_fixture;
     use swc_core::ecma::transforms::testing::FixtureTestConfig;
-    use swc_core::ecma::visit::as_folder;
-    use swc_ecma_parser::{EsConfig, Syntax, TsConfig};
+    use swc_core::ecma::visit::visit_mut_pass;
+    use swc_ecma_parser::{EsSyntax, TsSyntax, Syntax};
     use super::TransformVisitor;
 
     #[testing::fixture("tests/fixtures/*/input.mjs")]
     fn test_with_js_fixtures(input: PathBuf) {
         let output = input.with_file_name("expected.mjs");
         test_fixture(
-            Syntax::Es(EsConfig::default()),
+            Syntax::Es(EsSyntax::default()),
             &|_t| {
-                as_folder(TransformVisitor::default())
+                visit_mut_pass(TransformVisitor::default())
             },
             &input,
             &output,
@@ -162,9 +161,9 @@ mod tests {
     fn test_with_ts_fixtures(input: PathBuf) {
         let output = input.with_file_name("expected.mts");
         test_fixture(
-            Syntax::Typescript(TsConfig::default()),
+            Syntax::Typescript(TsSyntax::default()),
             &|_t| {
-                as_folder(TransformVisitor::default())
+                visit_mut_pass(TransformVisitor::default())
             },
             &input,
             &output,
