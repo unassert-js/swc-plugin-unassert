@@ -39,7 +39,7 @@
     "example:cli": "RUST_BACKTRACE=1 swc ./tests/fixtures/MemberExpression/input.mts",
     "build": "npm run build:release && npm run build:cp",
     "build:cp": "cp ./target/wasm32-wasi/release/swc_plugin_unassert.wasm ./swc_plugin_unassert.wasm",
-    "build:release": "cargo build-wasi --release",
+    "build:release": "cargo build --target=wasm32-wasip1 --release",
     "version": "cargo-set-version set-version $(cat ./package.json | jq -r '.version') && git add ./Cargo.toml && git add ./Cargo.lock",
     "prepack": "npm run build"
   },
